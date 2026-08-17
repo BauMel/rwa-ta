@@ -1,82 +1,149 @@
-# Engineering Assessment
+# API `BaudouinApiTest` — Documentation
 
-## 📝 Objective
+Endpoint that retrieves on-chain data for the **USDC** contract on Ethereum mainnet, with an optional query to also read a holder's balance.
 
-The goal of this assessment is to evaluate your ability to:
+**Base URL:** `http://localhost:3001`
+**Route:** `GET /api/BaudouinApiTest`
+**Demo:** [Watch the demo video](https://drive.google.com/file/d/16mGtc3JVbkLpkmiSjovWDZYQhTffuLXb/view?usp=sharing)
 
-Work with Web3 technologies and integrate blockchain functionality into a decentralized application (dApp).
+**Query parameters:**
 
----
-
-## 📌 Task Instructions
-
-1. **Create a New API Endpoint**
-
-   - Add a new API endpoint in `index.js` named:
-
-     ```
-     [Name]ApiTest
-     ```
-
-2. **Smart Contract Interaction**
-
-   - Select any **pre-deployed** or **public smart contract** (mainnet or testnet).
-   
-   - Fetch some data (any useful information such as balance, contract state, or public variables).
-   
-   - The logic should fetch data through your new API endpoint.
-
-
-3. **Output**
-
-   - The result should be printed to the console.
-   - No need for complex UI or data persistence 
-   - just demonstrate that the data was fetched successfully.
+| Param | Type | Required | Description |
+|---|---|---|---|
+| `holder` | string (Ethereum address, `0x…40 hex`) | No | If provided, the response also includes the balance of this address. |
 
 ---
 
-## 📤 Submission
+## 1. Call without `holder` (contract data only)
 
-Once completed, submit the deliverables in the following three forms:
-
-- **short video** recording your work.
-- **screenshots** showing the API call and console result.
-- **Github Link** where your assessment result were pushed.
-
----
-
-## ⏰ Time Expectation
-
-- Estimated time to complete: **30–60 minutes**.
-
----
-
-## ⚙️ Notes
-
-You may use any blockchain provider such as:
-
-  - **ethers.js**
-  - **web3.js**
-  - Any public RPC provider (Infura, Alchemy, QuickNode, etc.)
-  
-Keep your code **clean, simple, and easy to review**.
-
-Handle errors gracefully where possible.
-
----
-## 🚀 Quick Start Guide
-
-To run the project locally:
+### Request
 
 ```bash
-# Clone the repository (if provided)
-git clone [repo-url]
+curl.exe "http://localhost:3001/api/BaudouinApiTest"
+```
 
-# Move into the project directory
-cd [project-folder]
+### Response `200 OK`
 
-# Install dependencies
-npm install
+```json
+{
+  "success": true,
+  "source": "ethereum-mainnet",
+  "data": {
+    "rpcUrl": "https://ethereum-rpc.publicnode.com",
+    "blockNumber": 25775914,
+    "contractAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "decimals": 6,
+    "totalSupplyRaw": "49653761111627584",
+    "totalSupply": "49653761111.627584"
+  }
+}
+```
 
-# Start the server
-npm start
+### Server log
+
+```
+=== [BaudouinApiTest] On-chain data ===
+┌─────────────────┬────────────────────────────────────────────────┐
+│ (index)         │ Values                                         │
+├─────────────────┼────────────────────────────────────────────────┤
+│ rpcUrl          │ 'https://ethereum-rpc.publicnode.com'          │
+│ blockNumber     │ 25774989                                       │
+│ contractAddress │ '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'   │
+│ name            │ 'USD Coin'                                     │
+│ symbol          │ 'USDC'                                         │
+│ decimals        │ 6                                              │
+│ totalSupplyRaw  │ '49597999541647348'                            │
+│ totalSupply     │ '49597999541.647348'                           │
+└─────────────────┴────────────────────────────────────────────────┘
+GET /api/BaudouinApiTest 200 890.026 ms - 305
+```
+
+---
+
+## 2. Call with a valid `holder` (contract data + balance)
+
+### Request
+
+```bash
+curl.exe "http://localhost:3001/api/BaudouinApiTest?holder=0x28C6c06298d514Db089934071355E5743bf21d60"
+```
+
+### Response `200 OK`
+
+```json
+{
+  "success": true,
+  "source": "ethereum-mainnet",
+  "data": {
+    "rpcUrl": "https://ethereum-rpc.publicnode.com",
+    "blockNumber": 25775019,
+    "contractAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "decimals": 6,
+    "totalSupplyRaw": "49607793002498403",
+    "totalSupply": "49607793002.498403",
+    "holder": {
+      "address": "0x28C6c06298d514Db089934071355E5743bf21d60",
+      "balance": "50828.46732"
+    }
+  }
+}
+```
+
+### Server log
+
+```
+=== [BaudouinApiTest] On-chain data ===
+┌─────────────────┬──────────────────────────────────────────────┬───────────────┬────────────────────────────────────────────────┐
+│ (index)         │ address                                      │ balance       │ Values                                         │
+├─────────────────┼──────────────────────────────────────────────┼───────────────┼────────────────────────────────────────────────┤
+│ rpcUrl          │                                              │               │ 'https://ethereum-rpc.publicnode.com'          │
+│ blockNumber     │                                              │               │ 25775019                                       │
+│ contractAddress │                                              │               │ '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'   │
+│ name            │                                              │               │ 'USD Coin'                                     │
+│ symbol          │                                              │               │ 'USDC'                                         │
+│ decimals        │                                              │               │ 6                                              │
+│ totalSupplyRaw  │                                              │               │ '49607793002498403'                            │
+│ totalSupply     │                                              │               │ '49607793002.498403'                           │
+│ holder          │ '0x28C6c06298d514Db089934071355E5743bf21d60' │ '50828.46732' │                                                │
+└─────────────────┴──────────────────────────────────────────────┴───────────────┴────────────────────────────────────────────────┘
+GET /api/BaudouinApiTest?holder=0x28C6c06298d514Db089934071355E5743bf21d60 200 1132.234 ms - 395
+```
+
+---
+
+## 3. Call with an invalid `holder` (error case)
+
+### Request
+
+```bash
+curl.exe "http://localhost:3001/api/BaudouinApiTest?holder=notanaddress"
+```
+
+### Response
+
+```json
+{
+  "success": false,
+  "error": "Invalid holder address"
+}
+```
+
+---
+
+## Server startup log (reference)
+
+```
+PS C:\Users\BaudouinMeli\Desktop\TA\rwa-ta> npm start
+
+> assessment@1.0.0 start
+> node src/index.js
+
+Port 3001 is free. Ready to start server.
+Script called
+MONGO_URI not set — skipping DB connection
+Backend running on http://localhost:3001
+```
