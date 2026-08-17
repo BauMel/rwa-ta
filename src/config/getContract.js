@@ -1,5 +1,7 @@
 const axios = require('axios');
 
+const { ethers } = require('ethers');
+const { EthMainnetPublic, USDC_ADDRESS } = require('./constant');
 const { EthMainnet, PolygonMainnet, BscMainnet, ArbitrumMainnet, Avalanche, Fantom, Harmony, Heco, Klay, Matic, Moonbeam, Hashed, Optimism, Palm, Ronin, xDai } = require('./constant');
 const GET_ETHMAINNET_URL = EthMainnet;
 const GET_POLYGONMAINNET_URL = PolygonMainnet;
@@ -168,4 +170,47 @@ const callXDaiContract = () => {
     }});
 }
 
-module.exports = { callEthContract, callPolygonContract, callBscContract, callArbitrumContract, callAvalancheContract, callFantomContract, callHarmonyContract, callHecoContract, callKlayContract, callMaticContract, callMoonbeamContract, callOptimismContract, callPalmContract, callRoninContract, callXDaiContract };
+const ERC20_ABI = [
+    'function name() view returns (string)',
+    'function symbol() view returns (string)',
+    'function decimals() view returns (uint8)',
+    'function totalSupply() view returns (uint256)',
+    'function balanceOf(address) view returns (uint256)'
+];
+
+const getErc20Snapshot = async (holder) => {
+    const rpcUrl = process.env.ETH_RPC_URL || EthMainnetPublic;
+    const provider = new ethers.JsonRpcProvider(rpcUrl);
+    const contract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, provider);
+
+    const [blockNumber, name, symbol, decimals, totalSupply] = await Promise.all([
+        provider.getBlockNumber(),
+        contract.name(),
+        contract.symbol(),
+        contract.decimals(),
+        contract.totalSupply()
+    ]);
+
+    const snapshot = {
+        rpcUrl,
+        blockNumber,
+        contractAddress: USDC_ADDRESS,
+        name,
+        symbol,
+        decimals: Number(decimals),
+        totalSupplyRaw: totalSupply.toString(),
+        totalSupply: ethers.formatUnits(totalSupply, decimals)
+    };
+
+    if (holder) {
+        const balance = await contract.balanceOf(holder);
+        snapshot.holder = {
+            address: holder,
+            balance: ethers.formatUnits(balance, decimals)
+        };
+    }
+
+    return snapshot;
+};
+
+module.exports = { callEthContract, callPolygonContract, callBscContract, callArbitrumContract, callAvalancheContract, callFantomContract, callHarmonyContract, callHecoContract, callKlayContract, callMaticContract, callMoonbeamContract, callOptimismContract, callPalmContract, callRoninContract, callXDaiContract, getErc20Snapshot };

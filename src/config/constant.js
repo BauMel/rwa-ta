@@ -14,5 +14,7 @@ const Optimism = "https://mainnet.optimism.io"
 const Palm = "https://palm-mainnet.infura.io/v3/758874998f5bd0c393da094e1967a72b"
 const Ronin = "https://api.roninchain.com"
 const xDai = "https://rpc.xdaichain.com"
+const EthMainnetPublic = "https://ethereum-rpc.publicnode.com"
+const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 
-module.exports =  { EthMainnet, PolygonMainnet, BscMainnet, ArbitrumMainnet, Avalanche, Fantom, Harmony, Heco, Klay, Matic, Moonbeam, Optimism, Palm, Ronin, xDai };
+module.exports =  { EthMainnet, PolygonMainnet, BscMainnet, ArbitrumMainnet, Avalanche, Fantom, Harmony, Heco, Klay, Matic, Moonbeam, Optimism, Palm, Ronin, xDai, EthMainnetPublic, USDC_ADDRESS };
